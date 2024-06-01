@@ -19,6 +19,9 @@ const Navbar = () => {
           <Link as={NavLink} to="/documents" px={2} py={1} rounded="md" _hover={{ bg: "brand.800" }} fontSize="lg">
             Documents
           </Link>
+          <Link as={NavLink} to="/classes/:className" px={2} py={1} rounded="md" _hover={{ bg: "brand.800" }} fontSize="lg">
+            Class Details
+          </Link>
         </Flex>
       </Flex>
     </Box>
