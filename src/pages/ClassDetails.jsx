@@ -1,29 +1,32 @@
 import { useState } from "react";
 import { Box, Text, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
+import { useClasses, useClassStudents, useAddClassStudent } from "../integrations/supabase/index.js";
 
-const ClassDetails = ({ classes, setClasses }) => {
+const ClassDetails = () => {
   const { classId } = useParams();
-  const classIndex = parseInt(classId, 10);
-  const classDetails = classes[classIndex];
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: classes = [] } = useClasses();
+  const { data: classStudents = [], refetch } = useClassStudents();
+  const addClassStudentMutation = useAddClassStudent();
+  const classDetails = classes.find(cls => cls.id === parseInt(classId, 10));
+  
   const [studentName, setStudentName] = useState("");
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const addStudent = () => {
-    const updatedClasses = [...classes];
-    updatedClasses[classIndex].students.push(studentName);
-    setClasses(updatedClasses);
+  const addStudent = async () => {
+    const student = { name: studentName, class_id: classDetails.id };
+    await addClassStudentMutation.mutateAsync(student);
+    
     setStudentName("");
-    closeModal();
+    refetch();
   };
 
   return (
     <Box p={4}>
-      <Text fontSize="3xl" fontWeight="bold">{classDetails.name}</Text>
-      <Text fontSize="xl">{classDetails.description}</Text>
+      <Text fontSize="3xl" fontWeight="bold">{classDetails?.name}</Text>
+      <Text fontSize="xl">{classDetails?.description}</Text>
       <Button colorScheme="blue" onClick={openModal} mt={4}>Add Student</Button>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
@@ -54,9 +57,9 @@ const ClassDetails = ({ classes, setClasses }) => {
       </Modal>
       <Box mt={4}>
         <Text fontSize="2xl" fontWeight="bold">Students</Text>
-        {classDetails.students.map((student, index) => (
+        {classStudents.filter(cs => cs.class_id === classDetails?.id).map((student, index) => (
           <Box key={index} p={2} borderWidth={1} borderRadius="md" mb={2}>
-            <Text fontSize="lg">{student}</Text>
+            <Text fontSize="lg">{student.name}</Text>
           </Box>
         ))}
       </Box>
