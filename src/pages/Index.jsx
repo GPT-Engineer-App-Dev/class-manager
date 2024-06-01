@@ -4,8 +4,8 @@ const Index = () => {
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
       <VStack spacing={4}>
-        <Text fontSize="2xl">Welcome to the Teacher's Portal</Text>
-        <Text>Select a section from the navigation bar to get started.</Text>
+        <Text fontSize="3xl">Welcome to the Teacher's Portal</Text>
+        <Text fontSize="xl">Select a section from the navigation bar to get started.</Text>
       </VStack>
     </Container>
   );

@@ -9,8 +9,8 @@ const Classes = () => {
 
   return (
     <Box p={4}>
-      <Text fontSize="2xl" fontWeight="bold">Classes</Text>
-      <Text>Manage all your classes here.</Text>
+      <Text fontSize="3xl" fontWeight="bold">Classes</Text>
+      <Text fontSize="xl">Manage all your classes here.</Text>
     <Button colorScheme="blue" onClick={openModal} mt={4}>Add Class</Button>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
