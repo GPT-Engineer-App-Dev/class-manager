@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Box, Text, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, FormControl, FormLabel, Input, IconButton } from "@chakra-ui/react";
+import { Box, Text, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { DeleteIcon } from "@chakra-ui/icons";
 
 const Classes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,11 +68,7 @@ const Classes = () => {
               <Text fontSize="lg" fontWeight="bold">{cls.name}</Text>
               <Text>{cls.description}</Text>
             </Box>
-            <IconButton 
-              icon={<DeleteIcon />} 
-              colorScheme="red" 
-              onClick={() => removeClass(index)} 
-            />
+            <Button colorScheme="red" onClick={() => removeClass(index)}>Delete</Button>
           </Box>
         ))}
       </Box>
