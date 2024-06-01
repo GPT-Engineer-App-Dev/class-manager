@@ -1,20 +1,27 @@
 import { useState } from "react";
 import { Box, Text, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useClasses, useAddClass } from "../integrations/supabase/index.js";
 
 const Classes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [classDetails, setClassDetails] = useState({ name: "", description: "" });
-  const [classes, setClasses] = useState([]);
+  const { data: classes = [], refetch } = useClasses();
+  const addClassMutation = useAddClass();
   const navigate = useNavigate();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const removeClass = (index) => {
-    const newClasses = [...classes];
-    newClasses.splice(index, 1);
-    setClasses(newClasses);
+  const removeClass = async (id) => {
+    await supabase.from('classes').delete().eq('id', id);
+    refetch();
+  };
+
+  const addClass = async () => {
+    await addClassMutation.mutateAsync(classDetails);
+    setClassDetails({ name: "", description: "" });
+    closeModal();
   };
 
   return (
@@ -49,11 +56,7 @@ const Classes = () => {
             <Button 
               colorScheme="blue" 
               mr={3} 
-              onClick={() => {
-                setClasses([...classes, { ...classDetails, students: [] }]);
-                setClassDetails({ name: "", description: "" });
-                closeModal();
-              }}
+              onClick={addClass}
             >
               Save
             </Button>
@@ -62,13 +65,13 @@ const Classes = () => {
         </ModalContent>
       </Modal>
       <Box mt={4}>
-        {classes.map((cls, index) => (
-          <Box key={index} p={2} borderWidth={1} borderRadius="md" mb={2} display="flex" justifyContent="space-between" alignItems="center">
-            <Box onClick={() => navigate(`/classes/${index}`)} cursor="pointer">
+        {classes.map((cls) => (
+          <Box key={cls.id} p={2} borderWidth={1} borderRadius="md" mb={2} display="flex" justifyContent="space-between" alignItems="center">
+            <Box onClick={() => navigate(`/classes/${cls.id}`)} cursor="pointer">
               <Text fontSize="lg" fontWeight="bold">{cls.name}</Text>
               <Text>{cls.description}</Text>
             </Box>
-            <Button colorScheme="red" onClick={() => removeClass(index)}>Delete</Button>
+            <Button colorScheme="red" onClick={() => removeClass(cls.id)}>Delete</Button>
           </Box>
         ))}
       </Box>
