@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useClasses, useAddClass } from '../integrations/supabase';
 import { Box, Text, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 const Classes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [classDetails, setClassDetails] = useState({ name: "", description: "" });
-  const [classes, setClasses] = useState([]);
+  const { data: classes, isLoading, error } = useClasses();
   const navigate = useNavigate();
 
   const openModal = () => setIsModalOpen(true);
@@ -16,6 +17,8 @@ const Classes = () => {
     newClasses.splice(index, 1);
     setClasses(newClasses);
   };
+
+  const addClass = useAddClass();
 
   return (
     <Box p={4}>
@@ -50,7 +53,7 @@ const Classes = () => {
               colorScheme="blue" 
               mr={3} 
               onClick={() => {
-                setClasses([...classes, { ...classDetails, students: [] }]);
+                addClass.mutate({ name: classDetails.name, description: classDetails.description });
                 setClassDetails({ name: "", description: "" });
                 closeModal();
               }}

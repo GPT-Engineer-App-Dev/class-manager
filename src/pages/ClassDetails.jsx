@@ -1,24 +1,20 @@
 import { useState } from "react";
 import { Box, Text, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
+import { useClassStudents, useAddClassStudent } from '../integrations/supabase';
 
-const ClassDetails = ({ classes, setClasses }) => {
+const ClassDetails = ({ classes }) => {
   const { classId } = useParams();
   const classIndex = parseInt(classId, 10);
   const classDetails = classes[classIndex];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [studentName, setStudentName] = useState("");
 
+  const { data: classStudents, isLoading, error } = useClassStudents();
+  const addClassStudent = useAddClassStudent();
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
-  const addStudent = () => {
-    const updatedClasses = [...classes];
-    updatedClasses[classIndex].students.push(studentName);
-    setClasses(updatedClasses);
-    setStudentName("");
-    closeModal();
-  };
 
   return (
     <Box p={4}>
@@ -44,7 +40,11 @@ const ClassDetails = ({ classes, setClasses }) => {
             <Button 
               colorScheme="blue" 
               mr={3} 
-              onClick={addStudent}
+              onClick={() => {
+                addClassStudent.mutate({ class_id: classDetails.id, student_id: studentName });
+                setStudentName("");
+                closeModal();
+              }}
             >
               Save
             </Button>
@@ -54,7 +54,7 @@ const ClassDetails = ({ classes, setClasses }) => {
       </Modal>
       <Box mt={4}>
         <Text fontSize="2xl" fontWeight="bold">Students</Text>
-        {classDetails.students.map((student, index) => (
+        {classStudents && classStudents.map((student, index) => (
           <Box key={index} p={2} borderWidth={1} borderRadius="md" mb={2}>
             <Text fontSize="lg">{student}</Text>
           </Box>
